@@ -1,13 +1,32 @@
 Yamlrecord
 ==========
 
-Introduction goes here.
+YAMLRecord is Simple YAML DataBase for Rails.
 
 
-Example
+Simple Example
 =======
 
-Example goes here.
+	# app/model/setting.rb
+	class Setting < YAMLRecord
+	  attr_yaml_field :campaign_user_limit
+	  attr_yaml_field :campaign_url
+	end
+	
+	# db/yamlrecord/setting_development.yaml
+	---
+	campaign_user_limit: 99
+	campaign_url: /campaign.html
+	
+	# script/console
+	
+	Setting.campaign_url #=> "/campaign.html"
+	Setting.campaign_user_limit #=> 99
+	
+	Setting.campaign_user_limit = 200
+	
+	Setting.save
+
 
 
 Copyright (c) 2009 [name of plugin creator], released under the MIT license
