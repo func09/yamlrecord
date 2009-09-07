@@ -1,7 +1,8 @@
 require 'yaml/store'
 
 class YAMLRecord
-  
+
+  @@yaml_fields = []
   @@db_file = "#{RAILS_ROOT}/db/yamlrecord/#{self.to_s.underscore}_#{RAILS_ENV}.yml"
   @@yaml_db = YAML::Store.new @@db_file
 
@@ -20,16 +21,20 @@ class YAMLRecord
   def self.reload
     @@yaml_db.transaction do
       @@yaml_fields.each do |yaml_field|
-        method("#{yaml_field}=").call(@@yaml_db[yaml_field])
+        if respond_to?("#{yaml_field}=")
+          method("#{yaml_field}=").call(@@yaml_db[yaml_field])
+        end
       end
     end
   end
   
   def self.attr_yaml_field(*fields)
     fields.each do |field|
-      class_inheritable_accessor field
-      (@@yaml_fields ||= []) << field.to_s
-      @@yaml_fields.uniq!
+      unless @@yaml_fields.include?(field.to_s)
+        class_inheritable_accessor field
+        (@@yaml_fields ||= []) << field.to_s
+        @@yaml_fields.uniq!
+      end
     end
     reload
   end
